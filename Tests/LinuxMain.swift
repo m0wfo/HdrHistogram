@@ -3,5 +3,6 @@ import XCTest
 import HdrHistogramTests
 
 var tests = [XCTestCaseEntry]()
-tests += HdrHistogramTests.allTests()
+tests += HdrHistogramTests.__allTests()
+
 XCTMain(tests)
