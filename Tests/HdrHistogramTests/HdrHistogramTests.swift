@@ -1,5 +1,20 @@
+/*
+ Copyright 2021 TupleStream OÜ
+
+ See the LICENSE file for license information
+ SPDX-License-Identifier: Apache-2.0
+*/
 import XCTest
 @testable import HdrHistogram
+
+extension Int64 {
+
+    var asDouble: Double {
+        get {
+            return Double(truncating: self as NSNumber)
+        }
+    }
+}
 
 final class HdrHistogramTests: XCTestCase {
 
@@ -24,6 +39,22 @@ final class HdrHistogramTests: XCTestCase {
     }
 
     func testValueAtPercentileMatchesPercentile() throws {
+        let histogram = try! Histogram(lowestDiscernableValue: 1, highestTrackableValue: Int64.self.max, numberOfSignificantValueDigits: 2)
+        let lengths: [Int64] = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]
 
+        for length in lengths {
+            histogram.reset()
+            for i in (1...length) {
+                histogram.recordValue(i)
+            }
+
+            var value: Int64 = 1
+            while value < length {
+                let calculatedPercentile = 100.0 * Double(value) / length.asDouble
+                value = histogram.nextNonEquivalentValue(value)
+
+                let lookupValue = histogram.getValueAtPercentile(calculatedPercentile)
+            }
+        }
     }
 }
